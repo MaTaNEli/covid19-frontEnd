@@ -7,41 +7,62 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-
+import Other from './otherCondition';
+import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
 const Register = ()=>{
-    const [firstName, setFirstName] = useState();
-    const [lastName, setLastName] = useState();
-    const [dayOfBirth, setDayOfBirth] = useState();
-    const [address, setAddress] = useState();
-    const [city, setCity ] = useState();
-    const [zipCode, setZipCode] = useState();
-    const [landLine, setLandLine] = useState();
-    const [cellular, setCellular] = useState();
-    const [checkBox, setCheckBox] = useState(false);
-    const [other, setOther] = useState();
+    const [FirstName, setFirstName] = useState('');
+    const [LastName, setLastName] = useState('');
+    const [BirthDay, setDayOfBirth] = useState('');
+    const [Address, setAddress] = useState('');
+    const [City, setCity ] = useState('');
+    const [ZipCode, setZipCode] = useState('');
+    const [LandLine, setLandLine] = useState('');
+    const [Phone, setPhone] = useState('');
+    const [isInfected, setCheckBox] = useState(false);
+    const [other, setOther] = useState('');
+    const [otherInput, setOtherInput] = useState(false);
+    const [conditionInput, setConditionInput] = useState([]);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-    const inputData = e =>{
+
+    const inputData =async e =>{
         e.preventDefault();
-        console.log(firstName)
-        console.log(lastName)
-        console.log(dayOfBirth)
-        console.log(address)
-        console.log(city)
-        console.log(zipCode)
-        console.log(landLine)
-        console.log(cellular)
-        console.log(checkBox)
-        console.log(other)
+        let conditiondata = [...conditionInput];
+        if (otherInput) {
+            conditiondata.splice(conditionInput.indexOf('Other'), 1);
+            if(other)
+            conditiondata.push(other);
+        }
+        var Conditions = " ";
+
+        conditiondata.forEach(condition => Conditions += `${condition} `);
+
+        const sendData = {
+            FirstName, LastName, BirthDay, Address, City, ZipCode,LandLine, Phone, isInfected, Conditions
+        }
+
+        try{
+            await axios.post('http://localhost:8000/savedata/', sendData);
+            navigate('/summary')
+        }catch(e){
+            console.log(e.response.data.message)
+            setError(e.response.data.message);
+        }
+        
     }
 
     const dateFix = date =>{
-        const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()}`;
-        setDayOfBirth(dateOfBirth);
+        if (date.getFullYear()){
+            const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}`;
+            setDayOfBirth(dateOfBirth);
+        }  
     }
 
     return (
-        <div>
+        <div className="bg-light">
             <div className="d-flex justify-content-center mt-5">
             <h1>Covid19 - Registration Form</h1>
             </div>
@@ -71,7 +92,7 @@ const Register = ()=>{
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 label="Date of birth"
-                                value={dayOfBirth}
+                                value={BirthDay}
                                 inputFormat="dd/MM/yyyy"
                                 onChange={(newValue) => {
                                     dateFix(newValue);
@@ -125,20 +146,37 @@ const Register = ()=>{
                                 id="outlined-required"
                                 label="Cellular"
                                 defaultValue=""
-                                onChange={e => setCellular(e.target.value)}
+                                onChange={e => setPhone(e.target.value)}
                             />
                         </div>
 
                         <div className="mt-5">
-                            <FormControlLabel control={<Checkbox onChange={()=>setCheckBox(!checkBox)}
+                            <FormControlLabel control={<Checkbox onChange={()=>setCheckBox(!isInfected)}
                             />} label="Have been infected by COVID-19 before"/>
-                        </div >
+                        </div >  
+    
+                        <div>
+                            <Other setter={setConditionInput} setOther={setOtherInput}/>
+                        </div>
+                        <div>
+                            <TextField hidden={!otherInput} className="mx-2 mt-3" id="filled-error"
+                                       label="Add conditions" variant="filled" onChange={e => setOther(e.target.value)} />
+                        </div>
+
                             
                         <div className="d-flex justify-content-center mt-5">
                             <Button type="submit" variant="outlined">Send form</Button> 
                         </div>
  
                     </form>
+
+                    <div>
+                        <p className="text-center mx-auto w-75 mt-4" style={{color: "red"}}>{error}</p>
+                    </div>
+                    <div className='d-flex justify-content-center mb-5'>
+                        <Button variant="contained"
+                        onClick={() => navigate('/summary')}>Summary Page</Button>
+                    </div>
                 </div>
             </div>
         </div>
