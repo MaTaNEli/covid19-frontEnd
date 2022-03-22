@@ -19,16 +19,19 @@ const Summary = () =>{
     const [rows, setrows] = useState([]);
     const navigate = useNavigate();
 
+    // Get the info of the tables one time at the start
     useEffect (async() =>{
         const res = await axios.get('http://localhost:8000/');
         setrows(res.data);        
     }, [])    
 
+    // Function the get the full information of the sign in
     const fullTable = async () =>{
         const res = await axios.get('http://localhost:8000/');
         setrows(res.data);
     }
     
+    // Function to filter by city to send to back end
     const cityInput =async e =>{
         e.preventDefault();
         if (city){
@@ -39,6 +42,7 @@ const Summary = () =>{
                 
     }
 
+    // Function to filter by date to send to back end
     const dateInput =async e =>{
         e.preventDefault();
         if(startDate && endDate){
@@ -49,6 +53,7 @@ const Summary = () =>{
         } 
     }
 
+    // Function to fix the date to send to back end
     const startDateFix = date =>{
         if (date.getFullYear()){
             const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}`;
@@ -56,6 +61,7 @@ const Summary = () =>{
         }  
     }
 
+    // Function to fix the date to send to back end
     const endtDateFix = date =>{
         if (date.getFullYear()){
             const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}`;
@@ -63,9 +69,9 @@ const Summary = () =>{
         }  
     }
 
+    // the HTML of the summary
     return (
-        <div >
-            
+        <div> 
             <div className='d-flex justify-content-center mt-5'>
                     <h5 >Choose filter by city:</h5>
             </div>
@@ -119,8 +125,6 @@ const Summary = () =>{
                     </Button>
                 </Stack>
             </div>
-            
-            
 
             <table className="table table-striped mt-5">
                 <thead>
@@ -151,10 +155,10 @@ const Summary = () =>{
                             <td>{row.isInfected? "true": "false"}</td>
                             <td>{row.Conditions}</td>
                         </tr>
-                    ))}
-                                    
+                    ))}                    
                 </tbody>
             </table>
+
             <div className='d-flex justify-content-center mb-5'>
                 <Button variant="contained"
                 onClick={() => navigate('/')}>Register Page</Button>
@@ -167,10 +171,8 @@ const Summary = () =>{
                     </Button>
                 </Stack>
             </div>
-        </div>
-        
+        </div>    
     )
-    
 }
 
 export default Summary;

@@ -12,6 +12,7 @@ import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 
 const Register = ()=>{
+    // States definition
     const [FirstName, setFirstName] = useState('');
     const [LastName, setLastName] = useState('');
     const [BirthDay, setDayOfBirth] = useState('');
@@ -27,7 +28,8 @@ const Register = ()=>{
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-
+    // Befor send to back end fix all informarion
+    // to one object for sending
     const inputData =async e =>{
         e.preventDefault();
         let conditiondata = [...conditionInput];
@@ -38,12 +40,14 @@ const Register = ()=>{
         }
         var Conditions = " ";
 
+        // Get the conditions ass string and not array
         conditiondata.forEach(condition => Conditions += `${condition} `);
 
         const sendData = {
             FirstName, LastName, BirthDay, Address, City, ZipCode,LandLine, Phone, isInfected, Conditions
         }
 
+        // Send the data to the back end
         try{
             await axios.post('http://localhost:8000/savedata/', sendData);
             navigate('/summary')
@@ -54,6 +58,7 @@ const Register = ()=>{
         
     }
 
+    // Fixing the date that was types by the user
     const dateFix = date =>{
         if (date.getFullYear()){
             const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}`;
@@ -61,6 +66,7 @@ const Register = ()=>{
         }  
     }
 
+    // the html of the website register
     return (
         <div className="bg-light">
             <div className="d-flex justify-content-center mt-5">
