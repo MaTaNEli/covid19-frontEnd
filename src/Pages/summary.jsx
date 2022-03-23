@@ -37,17 +37,14 @@ const Summary = () =>{
         if (city){
             const res = await axios.get(`http://127.0.0.1:8000/city/?city=${city}`);
             setrows(res.data);
-            setCity('')
-        }
-                
+            //setCity('')
+        }         
     }
 
     // Function to filter by date to send to back end
     const dateInput =async e =>{
         e.preventDefault();
         if(startDate && endDate){
-            console.log(startDate)
-            console.log(endDate)
             const res = await axios.get(`http://127.0.0.1:8000/dob/?first=${startDate}&second=${endDate}`);
             setrows(res.data);
         } 
@@ -87,6 +84,12 @@ const Summary = () =>{
                         Send
                     </Button>
                 </Stack>
+                <Stack direction="row" spacing={2}>
+                   <Button href={`http://127.0.0.1:8000/cityexcel/?city=${city}`} 
+                            className='mx-2' variant="contained" disabled={!city}>
+                        Print to excel
+                    </Button>
+                </Stack>
             </div>
 
             <div className='d-flex justify-content-center mt-5'>
@@ -122,6 +125,12 @@ const Summary = () =>{
                 <Stack direction="row" spacing={2}>
                    <Button onClick={dateInput} variant="contained">
                         Send
+                    </Button>
+                </Stack>
+                <Stack direction="row" spacing={2}>
+                   <Button href={`http://127.0.0.1:8000/dateexcel/?first=${startDate}&second=${endDate}`}
+                    className='mx-2' variant="contained" disabled={!startDate || !endDate}>
+                        Print to excel
                     </Button>
                 </Stack>
             </div>
@@ -168,6 +177,11 @@ const Summary = () =>{
                 <Stack direction="row" spacing={2}>
                     <Button onClick={fullTable} variant="contained">
                         Show full table
+                    </Button>
+                </Stack>
+                <Stack direction="row" spacing={2}>
+                   <Button href='http://localhost:8000/allexport' className='mx-2' variant="contained">
+                        Print full table to excel
                     </Button>
                 </Stack>
             </div>
