@@ -46,7 +46,6 @@ const Register = ()=>{
         const sendData = {
             FirstName, LastName, BirthDay, Address, City, ZipCode,LandLine, Phone, isInfected, Conditions
         }
-
         // Send the data to the back end
         try{
             await axios.post('http://localhost:8000/savedata/', sendData);
