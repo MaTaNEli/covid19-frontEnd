@@ -1,7 +1,6 @@
 import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DatePicker from '@mui/lab/DatePicker';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,6 +9,9 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Other from './otherCondition';
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const Register = ()=>{
     // States definition
@@ -51,7 +53,6 @@ const Register = ()=>{
             await axios.post('http://localhost:8000/savedata/', sendData);
             navigate('/summary')
         }catch(e){
-            console.log(e.response.data.message)
             setError(e.response.data.message);
         }
         
@@ -59,8 +60,8 @@ const Register = ()=>{
 
     // Fixing the date that was types by the user
     const dateFix = date =>{
-        if (date.getFullYear()){
-            const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}`;
+        if (date){
+            const dateOfBirth = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
             setDayOfBirth(dateOfBirth);
         }  
     }
@@ -94,19 +95,16 @@ const Register = ()=>{
                         </div>
 
                         <div className="mt-5">
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                label="Date of birth"
-                                value={BirthDay}
-                                inputFormat="dd/MM/yyyy"
-                                onChange={(newValue) => {
-                                    dateFix(newValue);
-                                }}
-                                renderInput={(params) => <TextField className="mx-2 mt-3" {...params} />}
-                            />
-                        </LocalizationProvider>
-
-
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DatePicker
+                                    value={BirthDay || 'Date Of Birth'}
+                                    inputFormat="dd/MM/yyyy"
+                                    onChange={(newValue) => {
+                                        dateFix(newValue);
+                                    }}
+                                    renderInput={(params) => <TextField className="mx-2 mt-3" {...params} />}
+                                />
+                            </LocalizationProvider>
                         </div>
 
                         <div className="mt-5">

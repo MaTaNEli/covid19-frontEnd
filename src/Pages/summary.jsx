@@ -5,7 +5,8 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import DatePicker from '@mui/lab/DatePicker';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import {useNavigate} from "react-router-dom";
@@ -17,27 +18,42 @@ const Summary = () =>{
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [rows, setrows] = useState([]);
+    const [error, setError] = useState()
     const navigate = useNavigate();
-
+    
     // Get the info of the tables one time at the start
     useEffect (async() =>{
-        const res = await axios.get('http://localhost:8000/');
-        setrows(res.data);        
+        try{
+            const res = await axios.get('http://localhost:8000/');
+            setrows(res.data); 
+        }catch(e){
+            setError('Could not connect to the server')
+        }      
     }, [])    
 
     // Function the get the full information of the sign in
     const fullTable = async () =>{
-        const res = await axios.get('http://localhost:8000/');
-        setrows(res.data);
+        try{
+            const res = await axios.get('http://localhost:8000/');
+            setrows(res.data);
+        }catch(e){
+            setError('Could not connect to the server')
+        }
+        
     }
     
     // Function to filter by city to send to back end
     const cityInput =async e =>{
         e.preventDefault();
         if (city){
-            const res = await axios.get(`http://127.0.0.1:8000/city/?city=${city}`);
-            setrows(res.data);
-            //setCity('')
+            try{
+                const res = await axios.get(`http://127.0.0.1:8000/city/?city=${city}`);
+                setrows(res.data);
+            }catch(e){
+                setError('Could not connect to the server')
+            }
+            
+            
         }         
     }
 
@@ -45,23 +61,28 @@ const Summary = () =>{
     const dateInput =async e =>{
         e.preventDefault();
         if(startDate && endDate){
-            const res = await axios.get(`http://127.0.0.1:8000/dob/?first=${startDate}&second=${endDate}`);
-            setrows(res.data);
+            try{
+                const res = await axios.get(`http://127.0.0.1:8000/dob/?first=${startDate}&second=${endDate}`);
+                setrows(res.data);
+            }catch(e){
+                setError('Could not connect to the server')
+            }
+            
         } 
     }
 
     // Function to fix the date to send to back end
     const startDateFix = date =>{
-        if (date.getFullYear()){
-            const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}`;
+        if (date){
+            const dateOfBirth = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; 
             setStartDate(dateOfBirth);
         }  
     }
 
     // Function to fix the date to send to back end
     const endtDateFix = date =>{
-        if (date.getFullYear()){
-            const dateOfBirth = `${date.getFullYear()}-${date.getUTCMonth()+1}-${date.getUTCDate()+1}`;
+        if (date){
+            const dateOfBirth = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
             setEndDate(dateOfBirth);
         }  
     }
@@ -96,10 +117,11 @@ const Summary = () =>{
                 <h5 >Choose filter by Date:</h5>
             </div>
             <div className='d-flex justify-content-center mt-2'>
+                <div className='mx-2'>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                         label="Start Date"
-                        value={startDate}
+                        value={startDate || 'Start Date'}
                         inputFormat="dd/MM/yyyy"
                         onChange={(newValue) => {
                             startDateFix(newValue);
@@ -107,11 +129,13 @@ const Summary = () =>{
                         renderInput={(params) => <TextField className="mx-2 mt-3" {...params} />}
                     />
                 </LocalizationProvider>
+                </div>
                 
+                <div>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                         label="End Date"
-                        value={endDate}
+                        value={endDate || 'End Date'}
                         inputFormat="dd/MM/yyyy"
                         onChange={(newValue) => {
                             endtDateFix(newValue);
@@ -119,6 +143,8 @@ const Summary = () =>{
                         renderInput={(params) => <TextField className="mx-2 mt-3" {...params} />}
                     />
                 </LocalizationProvider>
+                </div>
+                
                 
             </div>
             <div className='d-flex justify-content-center mt-2'>
@@ -133,6 +159,10 @@ const Summary = () =>{
                         Print to excel
                     </Button>
                 </Stack>
+            </div>
+
+            <div className='d-flex justify-content-center'>
+                <p className='text-danger'>{error}</p>
             </div>
 
             <table className="table table-striped mt-5">
