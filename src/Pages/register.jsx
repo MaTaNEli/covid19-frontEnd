@@ -54,8 +54,7 @@ const Register = ()=>{
             navigate('/summary')
         }catch(e){
             setError(e.response.data.message);
-        }
-        
+        }  
     }
 
     // Fixing the date that was types by the user
@@ -94,7 +93,7 @@ const Register = ()=>{
                             />
                         </div>
 
-                        <div className="mt-5">
+                        <div className="mt-5 mx-2">
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DatePicker
                                     value={BirthDay || 'Date Of Birth'}
