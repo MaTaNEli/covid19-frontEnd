@@ -126,7 +126,6 @@ const Register = ()=>{
                             />
 
                             <TextField className="mx-2"
-                                required
                                 id="outlined-required"
                                 label="Zip Code"
                                 defaultValue=""
